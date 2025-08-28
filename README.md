@@ -1,6 +1,6 @@
 # TEMPLATE REACT NATIVE
 
-Tersedia halaman:
+## Tersedia halaman:
 1. Login (beserta logic)
 2. User (beserta logic untuk logout)
 3. Admin (beserta logic untuk logout)
