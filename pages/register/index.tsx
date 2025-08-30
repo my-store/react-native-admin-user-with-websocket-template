@@ -1,3 +1,4 @@
+import { APP_REGISTER_DEVCODE } from "../../libs/system/variables";
 import { useDispatch, useSelector } from "react-redux";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { RootState } from "../../libs/redux/store";
@@ -25,6 +26,7 @@ import {
 const PreviewImageSize = Dimensions.get("window").width / 5;
 
 export default function Register(props: any) {
+  const rootState = useSelector((state: RootState) => state.root);
   const registerState = useSelector((state: RootState) => state.register);
   const dispatch = useDispatch();
 
@@ -40,6 +42,9 @@ export default function Register(props: any) {
   }
 
   async function prepareRegister() {
+    // Block if not connected to server
+    if (!rootState.isConnected) return;
+
     // Block if already submitted form
     if (registerState.registerWait) return;
 
@@ -67,23 +72,9 @@ export default function Register(props: any) {
     // Set body data
     const body: any = { nama, tlp, password, foto };
 
-    // Example RE-CHECK is user table still as admin child?
-    // data.append("adminId", "1");
-
-    let tryReg: any;
+    // Insert data (no need authentication)
     try {
-      tryReg = await FormPost("user/register", {
-        headers: {
-          // Example RE-CHECK is user table still as admin child?
-          // Authorization: `Bearer ${}`
-        },
-        body,
-      });
-
-      // Error response from server
-      if (tryReg.message) {
-        return failed(tryReg.message);
-      }
+      await FormPost(`user/register/${APP_REGISTER_DEVCODE}`, { body });
     } catch {
       // Failed to comunicate with server
       return failed("Gagal menambahkan data!");
@@ -91,6 +82,9 @@ export default function Register(props: any) {
 
     // Reset form
     resetForm();
+
+    // Goto login page
+    props.navigation.goBack();
   }
 
   function resetForm() {
